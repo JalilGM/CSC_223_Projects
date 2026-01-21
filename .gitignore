@@ -1,0 +1,69 @@
+*.userosscache
+*.sln.docstates
+
+## NuGet packages
+packages/
+*.nupkg
+*.snupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+## Visual Studio cache/options
+.vs/
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+
+## ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+## Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+
+## Temporary files
+*.tmp
+*.temp
+*.log
+*.swp
+*~
+
+## OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+## IMPORTANT: Keep these files in the repository
+# Source code files (.cs) - INCLUDED
+# Project files (.csproj) - INCLUDED
+# Solution files (.sln) - INCLUDED
+# Configuration files (appsettings.json) - INCLUDED
