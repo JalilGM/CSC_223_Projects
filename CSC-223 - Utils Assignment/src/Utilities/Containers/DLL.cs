@@ -161,7 +161,7 @@ public class DLL<T>: IEnumerable<T>, IList<T>
         Dnode<T> current = head.Next;
         while (current != tail)
         {
-            elements.Add(current.Data?.ToString() ?? "null"); // ?? handles null values
+            elements.Add(current.Data?.ToString() ?? "null"); // "??" handles null values
             current = current.Next;
         }
         return "[" + string.Join(", ", elements) + "]";
