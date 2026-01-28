@@ -919,11 +919,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\21jtm\\Desktop\\CSC-223 - Copy\\CSC-223.csproj",
+      "projectUniqueName": "C:\\Users\\21jtm\\Documents\\GitHub\\CSC_223_Projects\\CSC-223 - Utils Assignment\\CSC-223.csproj",
       "projectName": "CSC-223",
-      "projectPath": "c:\\Users\\21jtm\\Desktop\\CSC-223 - Copy\\CSC-223.csproj",
+      "projectPath": "C:\\Users\\21jtm\\Documents\\GitHub\\CSC_223_Projects\\CSC-223 - Utils Assignment\\CSC-223.csproj",
       "packagesPath": "C:\\Users\\21jtm\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\21jtm\\Desktop\\CSC-223 - Copy\\obj\\",
+      "outputPath": "C:\\Users\\21jtm\\Documents\\GitHub\\CSC_223_Projects\\CSC-223 - Utils Assignment\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\21jtm\\AppData\\Roaming\\NuGet\\NuGet.Config"
