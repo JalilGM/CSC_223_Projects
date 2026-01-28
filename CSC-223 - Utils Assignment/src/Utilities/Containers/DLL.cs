@@ -22,6 +22,7 @@ public class DLL<T>: IEnumerable<T>, IList<T>
     private readonly Dnode<T> head = null!;
     private readonly Dnode<T> tail = null!;
 
+    public int size = 0;
     public DLL()
     {
         
@@ -29,7 +30,7 @@ public class DLL<T>: IEnumerable<T>, IList<T>
         tail = new Dnode<T>(default(T)!);
         head.Next = tail;
         tail.Prev = head;
-        public int size = 0;
+        size = 0;
     }
 
 
@@ -112,6 +113,116 @@ public class DLL<T>: IEnumerable<T>, IList<T>
         return head.Next.Data;
     }
 
-    
-}
+    public T Back()
+    {
+        if (size == 0) throw new InvalidOperationException("List is empty.");
+        return tail.Prev.Data;
+    }
 
+    public void PushFront(T item)
+    {
+        _Insert(head, item);
+    }
+
+    public void PushBack(T item)
+    {
+        _Insert(tail.Prev, item);
+    }
+
+    public void PopFront()
+    {
+        if (size == 0) throw new InvalidOperationException("List is empty.");
+        _Remove(head.Next);
+    }
+
+    public void PopBack()
+    {
+        if (size == 0) throw new InvalidOperationException("List is empty.");
+        _Remove(tail.Prev);
+    }
+
+    public void Clear()
+    {
+        head.Next = tail;
+        tail.Prev = head;
+        size = 0;
+    }
+
+    public bool IsEmpty()
+    {
+        return size == 0;
+    }
+
+    public int Count { get; }
+    public bool IsReadOnly { get; }
+
+    public void Add(T item)
+    {
+        PushBack(item);
+    }
+
+    public void Insert(int index, T item)
+    {
+        if (index < 0 || index > size) throw new ArgumentOutOfRangeException("Index out of range.");
+        Dnode<T> node = _GetNode(index);
+        _Insert(node.Prev, item); // Insert before the node at the index, so node is at index intended for
+    }
+
+    public int IndexOf(T item)
+    {
+        Dnode<T> current = head.Next;
+        int index = 0;
+        while (current != tail)
+        {
+            if (EqualityComparer<T>.Default.Equals(current.Data, item)) return index;
+            current = current.Next;
+            index++;
+        }
+        return -1; // Not found
+    }
+
+    public T this[int index] 
+    {
+        get
+        {
+            Dnode<T> node = _GetNode(index);
+            return node.Data;
+        }
+        set
+        {
+            Dnode<T> node = _GetNode(index);
+            node.Data = value;
+        }
+    }
+
+    public void RemoveAt(int index)
+    {
+        Dnode<T> node = _GetNode(index);
+        _Remove(node);
+    }
+
+    public void CopyTo(T[] array, int arrayIndex)
+    {
+        Dnode<T> current = head.Next;
+        while (current != tail)
+        {
+            array[arrayIndex++] = current.Data;
+            current = current.Next;
+        }
+    }
+
+    public IEnumerator<T> GetEnumerator()
+    {
+        Dnode<T> current = head.Next;
+        while (current != tail)
+        {
+            yield return current.Data;
+            current = current.Next;
+        }
+    }
+
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+}    
