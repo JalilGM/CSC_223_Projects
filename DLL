@@ -1,0 +1,475 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Containers;
+
+/// <summary>
+/// Represents a node in a doubly linked list.
+/// Contains data and references to both the next and previous nodes.
+/// </summary>
+/// <typeparam name="T">The type of data stored in the node</typeparam>
+public class Dnode<T>
+{
+    /// <summary>Gets or sets the data stored in this node</summary>
+    public T Data { get; set; }
+    
+    /// <summary>Gets or sets the reference to the next node in the list</summary>
+    public Dnode<T>? Next { get; set; }
+    
+    /// <summary>Gets or sets the reference to the previous node in the list</summary>
+    public Dnode<T>? Prev { get; set; }
+
+    /// <summary>
+    /// Initializes a new node with the specified data.
+    /// Both Next and Prev references are set to null.
+    /// </summary>
+    /// <param name="data">The data to store in this node</param>
+    public Dnode(T data)
+    {
+        Data = data;
+        Next = null;
+        Prev = null;
+    }
+}
+
+/// <summary>
+/// A generic doubly linked list implementation that provides efficient insertion and deletion
+/// at both ends of the list. Uses sentinel nodes (head and tail) to simplify boundary conditions.
+/// Implements IEnumerable and IList interfaces for standard collection operations.
+/// </summary>
+/// <typeparam name="T">The type of elements in the list</typeparam>
+public class DLL<T> : IEnumerable<T>, IList<T>
+{
+    /// <summary>Sentinel node at the beginning of the list (contains no meaningful data)</summary>
+    private readonly Dnode<T> head = null!;
+    
+    /// <summary>Sentinel node at the end of the list (contains no meaningful data)</summary>
+    private readonly Dnode<T> tail = null!;
+
+    /// <summary>Tracks the number of elements currently in the list</summary>
+    public int size = 0;
+    
+    /// <summary>
+    /// Initializes a new empty doubly linked list with sentinel head and tail nodes.
+    /// The head and tail are connected to each other, forming an empty circular structure.
+    /// This simplifies insertion/deletion operations by eliminating null checks at boundaries.
+    /// </summary>
+    public DLL()
+    {
+        // Create sentinel nodes that will never contain actual user data
+        head = new Dnode<T>(default(T)!);
+        tail = new Dnode<T>(default(T)!);
+        
+        // Connect sentinels: head <-> tail (empty list state)
+        head.Next = tail;
+        tail.Prev = head;
+        size = 0;
+    }
+
+    /// <summary>
+    /// Core insertion operation: inserts an item after the specified node.
+    /// Updates all necessary link pointers and increments the size counter.
+    /// This private method is used by all public insertion methods.
+    /// </summary>
+    /// <param name="node">The node after which to insert the new item</param>
+    /// <param name="item">The item to insert</param>
+    private void _Insert(Dnode<T> node, T item)
+    {
+        // Create the new node with the given data
+        Dnode<T> newNode = new Dnode<T>(item);
+        
+        // Link the new node into the list (order matters here!)
+        newNode.Next = node.Next;      // 1. New node points forward to old next
+        newNode.Prev = node;            // 2. New node points backward to insertion point
+        node.Next!.Prev = newNode;      // 3. Update the old next's previous reference
+        node.Next = newNode;            // 4. Update the insertion point's next reference
+        
+        size++; // Increment the element count
+    }
+
+    /// <summary>
+    /// Core removal operation: removes the specified node from the list.
+    /// Updates the neighboring nodes' pointers to bypass the removed node
+    /// and decrements the size counter. Does not validate that the node exists in this list.
+    /// </summary>
+    /// <param name="node">The node to remove from the list</param>
+    private void _Remove(Dnode<T> node)
+    {
+        // Remove the node by updating its neighbors' references to bypass it
+        node.Prev!.Next = node.Next;    // Predecessor's next points to successor
+        node.Next!.Prev = node.Prev;    // Successor's previous points to predecessor
+        
+        size--; // Decrement the element count
+    }
+
+    /// <summary>
+    /// Retrieves the node at the specified index by traversing the list.
+    /// This is an O(n) operation as it must iterate from the head.
+    /// </summary>
+    /// <param name="index">The zero-based index of the node to retrieve</param>
+    /// <returns>The node at the specified index</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if index is negative or >= size</exception>
+    private Dnode<T> _GetNode(int index)
+    {
+        // Validate the index is within bounds
+        if (index < 0 || index >= size) 
+            throw new ArgumentOutOfRangeException("Invalid Index");
+
+        // Start at the first real node (after the head sentinel)
+        Dnode<T> current = head.Next!;
+        
+        // BUG FIX: Original code had "index++" which would create infinite loop
+        // Should be "i++" to iterate through the list
+        for (int i = 0; i < index; i++)
+        {
+            current = current.Next!;
+        }
+        return current;
+    }
+
+    /// <summary>
+    /// Determines whether the list contains a specific item by traversing
+    /// and comparing each element using value equality.
+    /// This is an O(n) operation.
+    /// </summary>
+    /// <param name="item">The item to search for</param>
+    /// <returns>True if the item is found; otherwise, false</returns>
+    public bool Contains(T item)
+    {
+        // Start at the first real node
+        Dnode<T> current = head.Next!;
+        
+        // Traverse until we hit the tail sentinel
+        while (current != tail)
+        {
+            // Use default equality comparer for type T
+            if (EqualityComparer<T>.Default.Equals(current.Data, item)) 
+                return true;
+            current = current.Next!;
+        }
+        return false; // Item not found
+    }
+
+    /// <summary>
+    /// Gets the number of elements in the list.
+    /// This is an O(1) operation as size is maintained during insertions/deletions.
+    /// </summary>
+    /// <returns>The count of elements in the list</returns>
+    public int Size()
+    {
+        return size;
+    }
+
+    /// <summary>
+    /// Returns a string representation of the list in the format "[element1, element2, ...]"
+    /// Useful for debugging and displaying the list contents.
+    /// </summary>
+    /// <returns>A formatted string of all elements in the list</returns>
+    public new string ToString()
+    {
+        StringBuilder myString = new StringBuilder("[");
+        Dnode<T> current = head.Next!;
+        
+        // BUG FIX: Original code didn't advance 'current', creating infinite loop
+        while (current != tail)
+        {
+            myString.Append(current.Data);
+            if (current.Next != tail) // Add comma if not the last element
+                myString.Append(", ");
+            current = current.Next!; // ADDED: Move to next node
+        }
+        myString.Append("]");
+        return myString.ToString();
+    }
+
+    /// <summary>
+    /// Removes the first occurrence of a specific item from the list.
+    /// Uses value equality to find the item. Only removes one instance if duplicates exist.
+    /// </summary>
+    /// <param name="item">The item to remove</param>
+    /// <returns>True if the item was found and removed; otherwise, false</returns>
+    public bool Remove(T item)
+    {
+        // BUG FIX: Original had "head.next" (lowercase) and "while (head != tail);" with semicolon
+        // Should be "head.Next" and proper while loop condition
+        Dnode<T> current = head.Next!;
+        
+        // Traverse the list looking for the item
+        while (current != tail)
+        {
+            // If we find a match, remove it and return success
+            if (EqualityComparer<T>.Default.Equals(current.Data, item))
+            {
+                _Remove(current);
+                return true;
+            }
+            current = current.Next!;
+        }
+        return false; // Item not found
+    }
+
+    /// <summary>
+    /// Returns the first element in the list without removing it.
+    /// This is an O(1) operation due to the sentinel head node.
+    /// </summary>
+    /// <returns>The element at the front of the list</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the list is empty</exception>
+    public T Front()
+    {
+        if (size == 0) 
+            throw new InvalidOperationException("Invalid List");
+        return head.Next!.Data;
+    }
+
+    /// <summary>
+    /// Returns the last element in the list without removing it.
+    /// This is an O(1) operation due to the sentinel tail node.
+    /// </summary>
+    /// <returns>The element at the back of the list</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the list is empty</exception>
+    public T Back()
+    {
+        if (size == 0) 
+            throw new InvalidOperationException("Invalid List");
+        return tail.Prev!.Data;
+    }
+
+    /// <summary>
+    /// Adds an element to the front of the list (after the head sentinel).
+    /// This is an O(1) operation.
+    /// </summary>
+    /// <param name="item">The item to add</param>
+    public void PushFront(T item)
+    {
+        _Insert(head, item); // Insert right after the head sentinel
+    }
+
+    /// <summary>
+    /// Adds an element to the back of the list (before the tail sentinel).
+    /// This is an O(1) operation.
+    /// </summary>
+    /// <param name="item">The item to add</param>
+    public void PushBack(T item)
+    {
+        _Insert(tail.Prev!, item); // Insert right before the tail sentinel
+    }
+
+    /// <summary>
+    /// Removes and returns the first element in the list.
+    /// This is an O(1) operation.
+    /// </summary>
+    /// <returns>The removed element from the front of the list</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the list is empty</exception>
+    public T PopFront()
+    {
+        if (size == 0) 
+            throw new InvalidOperationException("Invalid List");
+        
+        // BUG FIX: Original declared 'front' variable which doesn't exist
+        // Get the data before removing the node
+        T front = head.Next!.Data;
+        _Remove(head.Next!);
+        return front;
+    }
+
+    /// <summary>
+    /// Removes and returns the last element in the list.
+    /// This is an O(1) operation.
+    /// </summary>
+    /// <returns>The removed element from the back of the list</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the list is empty</exception>
+    public T PopBack()
+    {
+        if (size == 0) 
+            throw new InvalidOperationException("Invalid List");
+        
+        // BUG FIX: Original declared 'back' variable which doesn't exist
+        // Get the data before removing the node
+        T back = tail.Prev!.Data;
+        _Remove(tail.Prev!);
+        return back;
+    }
+
+    /// <summary>
+    /// Removes all elements from the list, making it empty.
+    /// Resets the list to its initial state with only sentinel nodes connected.
+    /// This is an O(1) operation (garbage collector handles node cleanup).
+    /// </summary>
+    public void Clear()
+    {
+        // Reconnect sentinels to each other, orphaning all nodes
+        head.Next = tail;
+        tail.Prev = head;
+        size = 0;
+    }
+
+    /// <summary>
+    /// Determines whether the list is empty.
+    /// This is an O(1) operation.
+    /// </summary>
+    /// <returns>True if the list contains no elements; otherwise, false</returns>
+    public bool IsEmpty()
+    {
+        return size == 0;
+    }
+
+    /// <summary>
+    /// Gets the number of elements in the list (IList interface implementation).
+    /// This is an O(1) operation.
+    /// </summary>
+    public int Count => size;
+    
+    /// <summary>
+    /// Gets a value indicating whether the list is read-only.
+    /// Always returns false as this list is mutable.
+    /// </summary>
+    public bool IsReadOnly => false;
+
+    /// <summary>
+    /// Adds an item to the end of the list (IList interface implementation).
+    /// This is an O(1) operation.
+    /// </summary>
+    /// <param name="item">The item to add</param>
+    public void Add(T item)
+    {
+        PushBack(item);
+    }
+
+    /// <summary>
+    /// Inserts an item at the specified index in the list.
+    /// All elements at and after the index are shifted to the right.
+    /// This is an O(n) operation due to traversal to the index.
+    /// </summary>
+    /// <param name="index">The zero-based index at which to insert</param>
+    /// <param name="item">The item to insert</param>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if index is out of bounds</exception>
+    public void Insert(int index, T item)
+    {
+        if (index < 0 || index > size) 
+            throw new ArgumentOutOfRangeException("Invalid Index");
+        
+        // If inserting at the end, use the tail sentinel (no existing node at index == size)
+        Dnode<T> node = (index == size) ? tail : _GetNode(index);
+        // Insert before this node (so new item takes this index position)
+        _Insert(node.Prev!, item);
+    }
+
+    /// <summary>
+    /// Searches for the specified item and returns its zero-based index.
+    /// Returns -1 if the item is not found.
+    /// This is an O(n) operation.
+    /// </summary>
+    /// <param name="item">The item to locate</param>
+    /// <returns>The index of the item if found; otherwise, -1</returns>
+    public int IndexOf(T item)
+    {
+        int index = 0;
+        Dnode<T> current = head.Next!;
+        
+        // Traverse the list and track the index
+        while (current != tail)
+        {
+            // BUG FIX: Original had "current>data" (wrong operator)
+            // Should be "current.Data" to access the property
+            if (EqualityComparer<T>.Default.Equals(current.Data, item)) 
+                return index;
+            current = current.Next!;
+            index++;
+        }
+        return -1; // Not found
+    }
+
+    /// <summary>
+    /// Gets or sets the element at the specified index.
+    /// This is an O(n) operation due to traversal to the index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element</param>
+    /// <returns>The element at the specified index</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if index is out of bounds</exception>
+    public T this[int index] 
+    {
+        get
+        {
+            // Traverse to the node and return its data
+            Dnode<T> node = _GetNode(index);
+            return node.Data;
+        }
+        set
+        {
+            // Traverse to the node and update its data
+            Dnode<T> node = _GetNode(index);
+            node.Data = value;
+        }
+    }
+
+    /// <summary>
+    /// Removes the element at the specified index.
+    /// This is an O(n) operation due to traversal to the index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to remove</param>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if index is out of bounds</exception>
+    public void RemoveAt(int index)
+    {
+        // Find the node at this index and remove it
+        Dnode<T> node = _GetNode(index);
+        _Remove(node);
+    }
+
+    /// <summary>
+    /// Copies all elements of the list to an array, starting at the specified array index.
+    /// This is an O(n) operation.
+    /// </summary>
+    /// <param name="array">The destination array</param>
+    /// <param name="arrayIndex">The zero-based index in the array at which copying begins</param>
+    /// <exception cref="ArgumentNullException">Thrown if array is null</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if arrayIndex is negative</exception>
+    /// <exception cref="ArgumentException">Thrown if there's not enough space in the array</exception>
+    public void CopyTo(T[] array, int arrayIndex)
+    {
+        // Validate parameters
+        if (array == null) 
+            throw new ArgumentNullException("Array is null");
+        if (arrayIndex < 0) 
+            throw new ArgumentOutOfRangeException("Invalid Index");
+        if ((array.Length - arrayIndex) < size) 
+            throw new ArgumentException("Not enough space in array");
+
+        // Copy each element to the array
+        Dnode<T> current = head.Next!;
+        while (current != tail)
+        {
+            array[arrayIndex] = current.Data;
+            arrayIndex++;
+            current = current.Next!;
+        }
+    }
+
+    /// <summary>
+    /// Returns an enumerator that iterates through the list.
+    /// Uses yield return for efficient iteration without creating a temporary collection.
+    /// This enables foreach loop support.
+    /// </summary>
+    /// <returns>An enumerator for the list</returns>
+    public IEnumerator<T> GetEnumerator()
+    {
+        Dnode<T> current = head.Next!;
+        
+        // Yield each element as we traverse
+        while (current != tail)
+        {
+            yield return current.Data;
+            current = current.Next!;
+        }
+    }
+
+    /// <summary>
+    /// Returns a non-generic enumerator (required by IEnumerable interface).
+    /// Delegates to the generic GetEnumerator method.
+    /// </summary>
+    /// <returns>An enumerator for the list</returns>
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+}
