@@ -1,3 +1,9 @@
+
+
+
+
+using System.Collections;
+
 /**
  * Doubly Linked List (DLL) Implementation in C#
  * 
@@ -6,9 +12,6 @@
  * @author Jalil Garvin-Mingo
  * @date   January 27, 2026
  */
-
-
-
 namespace Containers;
 
 /// <summary>
@@ -381,7 +384,7 @@ public class DLL<T>: IEnumerable<T>, IList<T>
     /// Returns an enumerator that iterates through the list (non-generic implementation).
     /// </summary>
     /// <returns>An enumerator for the list</returns>
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+    IEnumerator System.Collections.IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
     }
