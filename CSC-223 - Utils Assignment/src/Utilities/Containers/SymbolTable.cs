@@ -10,6 +10,7 @@
  */
 
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Containers;
 
@@ -22,12 +23,11 @@ namespace Containers;
 /// <typeparam name="TValue">The type of values associated with keys</typeparam>
 public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
 {
-    private readonly Dictionary<TKey, TValue> table;
-
+    private readonly DLL<TKey> tablekeys;
+    private readonly DLL<TValue> tablevalues;
     private readonly SymbolTable<TKey, TValue>? parent;
 
-    public SymbolTable(): this(null)
-    {}
+    public SymbolTable(): this(null) { }
 
     /// <summary>
     /// Initializes a new instance of the SymbolTable with an optional parent
@@ -38,8 +38,8 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
     public SymbolTable(SymbolTable<TKey, TValue>? parent)
     {
         this.parent = parent;
-        table = new Dictionary<TKey, TValue>();
-    
+        tablekeys = new DLL<TKey>();
+        tablevalues = new DLL<TValue>();
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
     {
         if (key == null)
             throw new ArgumentNullException(nameof(key));
-        return table.ContainsKey(key);
+        return tablekeys.Contains(key);
     }
 
     /// <summary>
@@ -78,7 +78,14 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
     {
         if (key == null)
             throw new ArgumentNullException(nameof(key));
-        return table.TryGetValue(key, out value);
+        int idx = tablekeys.IndexOf(key);
+        if (idx >= 0)
+        {
+            value = tablevalues[idx];
+            return true;
+        }
+        value = default!; // Using default! to suppress nullable warning
+        return false;
     }
 
     /// <summary>
@@ -90,24 +97,41 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
     /// for a key that does not exist</exception>
     public TValue this[TKey key]
     {
-        get => table[key];
-        set => table[key] = value;
+        get
+        {
+            if (TryGetValue(key, out TValue val)) return val;
+            throw new KeyNotFoundException(); // Key not found in this table or any parent tables
+        }
+        set
+        {
+            if (key == null) throw new ArgumentNullException(nameof(key)); // Key cannot be null
+            int idx = tablekeys.IndexOf(key);
+            if (idx >= 0)
+            {
+                tablevalues[idx] = value;
+            }
+            else
+            {
+                tablekeys.Add(key); // Add new key to the local table
+                tablevalues.Add(value); // Add corresponding value to the local table
+            }
+        }
     }
 
     /// <summary>
     /// Gets a collection of all keys in this symbol table.
     /// </summary>
-    public ICollection<TKey> Keys => table.Keys;
+    public ICollection<TKey> Keys => tablekeys;
 
     /// <summary>
     /// Gets a collection of all values in this symbol table.
     /// </summary>
-    public ICollection<TValue> Values => table.Values;
+    public ICollection<TValue> Values => tablevalues;
 
     /// <summary>
     /// Gets the number of key-value pairs stored in this symbol table.
     /// </summary>
-    public int Count => table.Count;
+    public int Count => tablekeys.Count;
 
     /// <summary>
     /// Gets a value indicating whether this symbol table is read-only.
@@ -124,7 +148,10 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
     /// exists in the table</exception>
     public void Add(TKey key, TValue value)
     {
-        table.Add(key, value);
+        if (key == null) throw new ArgumentNullException(nameof(key));
+        if (tablekeys.Contains(key)) throw new ArgumentException("An item with the same key has already been added.");
+        tablekeys.Add(key);
+        tablevalues.Add(value);
     }
 
     /// <summary>
@@ -134,7 +161,9 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
     /// <returns>true if the key exists; otherwise, false</returns>
     public bool ContainsKey(TKey key)
     {
-        return table.ContainsKey(key);
+        if (key == null) return false;
+        if (tablekeys.Contains(key)) return true;
+        return parent != null && parent.ContainsKey(key);
     }
 
     /// <summary>
@@ -145,7 +174,15 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
     /// false</returns>
     public bool Remove(TKey key)
     {
-        return table.Remove(key);
+        if (key == null) return false;
+        int idx = tablekeys.IndexOf(key);
+        if (idx >= 0)
+        {
+            tablekeys.RemoveAt(idx);
+            tablevalues.RemoveAt(idx);
+            return true;
+        }
+        return false;
     }
 
     /// <summary>
@@ -157,7 +194,16 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
     /// <returns>true if the key exists; otherwise, false</returns>
     public bool TryGetValue(TKey key, out TValue value)
     {
-        return table.TryGetValue(key, out value);
+        if (key == null) { value = default!; return false; }
+        int idx = tablekeys.IndexOf(key);
+        if (idx >= 0)
+        {
+            value = tablevalues[idx];
+            return true;
+        }
+        if (parent != null) return parent.TryGetValue(key, out value);
+        value = default!;
+        return false;
     }
 
     /// <summary>
@@ -165,7 +211,8 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
     /// </summary>
     public void Clear()
     {
-        table.Clear();
+        tablekeys.Clear();
+        tablevalues.Clear();
     }
 
     /// <summary>
@@ -176,7 +223,7 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
     /// exists in the table</exception>
     public void Add(KeyValuePair<TKey, TValue> item)
     {
-        table.Add(item.Key, item.Value);
+        Add(item.Key, item.Value);
     }
 
     /// <summary>
@@ -187,7 +234,9 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
     /// false</returns>
     public bool Contains(KeyValuePair<TKey, TValue> item)
     {
-        return table.Contains(item);
+        int idx = tablekeys.IndexOf(item.Key);
+        if (idx < 0) return false;
+        return EqualityComparer<TValue>.Default.Equals(tablevalues[idx], item.Value);
     }
 
     /// <summary>
@@ -199,7 +248,13 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
     /// begins</param>
     public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
     {
-        ((IDictionary<TKey, TValue>)table).CopyTo(array, arrayIndex);
+        if (array == null) throw new ArgumentNullException(nameof(array));
+        if (arrayIndex < 0) throw new ArgumentOutOfRangeException(nameof(arrayIndex));
+        if (array.Length - arrayIndex < Count) throw new ArgumentException("Destination array is not large enough.");
+        for (int i = 0; i < Count; i++)
+        {
+            array[arrayIndex + i] = new KeyValuePair<TKey, TValue>(tablekeys[i], tablevalues[i]);
+        }
     }
 
     /// <summary>
@@ -210,7 +265,15 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
     /// false</returns>
     public bool Remove(KeyValuePair<TKey, TValue> item)
     {
-        return ((IDictionary<TKey, TValue>)table).Remove(item);
+        int idx = tablekeys.IndexOf(item.Key);
+        if (idx < 0) return false;
+        if (EqualityComparer<TValue>.Default.Equals(tablevalues[idx], item.Value))
+        {
+            tablekeys.RemoveAt(idx);
+            tablevalues.RemoveAt(idx);
+            return true;
+        }
+        return false;
     }
 
     /// <summary>
@@ -220,7 +283,10 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
     /// <returns>An enumerator for the dictionary</returns>
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
     {
-        return table.GetEnumerator();
+        for (int i = 0; i < Count; i++)
+        {
+            yield return new KeyValuePair<TKey, TValue>(tablekeys[i], tablevalues[i]);
+        }
     }
 
     /// <summary>
@@ -230,6 +296,6 @@ public class SymbolTable<TKey, TValue> : IDictionary<TKey, TValue>
     /// <returns>An enumerator for the dictionary</returns>
     IEnumerator System.Collections.IEnumerable.GetEnumerator()
     {
-        return table.GetEnumerator();
+        return GetEnumerator();
     }
 }
