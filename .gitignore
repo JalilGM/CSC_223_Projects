@@ -1,6 +1,11 @@
 *.userosscache
 *.sln.docstates
 
+*.dll
+*.pdb
+*.cache
+
+
 ## NuGet packages
 packages/
 *.nupkg
