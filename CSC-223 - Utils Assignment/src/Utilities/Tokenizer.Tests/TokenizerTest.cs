@@ -1,5 +1,17 @@
 
 
+/**
+ * Unit tests for the tokenizer implementation and supporting Token class.
+ *
+ * Tests are written using xUnit and cover a wide range of valid inputs,
+ * edge cases, and error conditions.  Individual test names describe their
+ * purpose; therefore extensive inline comments are not required.
+ *
+ * Bugs: 
+ *
+ * Jalil Garvin-Mingo
+ * @date 2026-02-20
+ */
 using Xunit;
 
 namespace Tokenizer;
@@ -8,8 +20,7 @@ public class TokenizerTest
 {
     private readonly TokenizerImpl _tokenizer = new TokenizerImpl();
 
-    #region Token Class Tests
-
+    #region Token Class Tests // verify basic behavior of Token and equality
     [Fact]
     public void Token_Constructor_SetsValueAndType()
     {
@@ -248,7 +259,7 @@ public class TokenizerTest
 
     #endregion
 
-    #region Assignment Tokenization Tests
+    #region Assignment Tokenization Tests // tests around the ":=" assignment operator and edge conditions
 
     [Fact]
     public void Tokenize_AssignmentOperator_StandAlone_ThrowsArgumentException()
