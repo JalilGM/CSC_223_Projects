@@ -1,3 +1,13 @@
+/**
+ * Comprehensive test suite for Builder classes (DefaultBuilder, DebugBuilder, NullBuilder).
+ * Tests node creation, unparsing, statement generation, and debug output behavior.
+ *
+ * Bugs: None known at this time
+ *
+ * @author Generated via LLM with manual review and enhancement
+ * @date   February 27, 2026
+ */
+
 using Xunit;
 using AST;
 using Containers;
@@ -11,6 +21,7 @@ namespace AST.Tests
         private readonly DefaultBuilder _builder = new DefaultBuilder();
 
         #region LiteralNode Tests
+        // Tests for LiteralNode creation with various integer values and type validation
         [Theory]
         [InlineData(0)]
         [InlineData(1)]
@@ -42,6 +53,7 @@ namespace AST.Tests
         #endregion
 
         #region VariableNode Tests
+        // Tests for VariableNode creation with various naming patterns
         [Theory]
         [InlineData("x")]
         [InlineData("y")]
@@ -64,6 +76,8 @@ namespace AST.Tests
         #endregion
 
         #region Binary Operator Tests
+        // Tests for all binary operators (Plus, Minus, Times, FloatDiv, IntDiv, Modulus, Exponentiation)
+        // including correctness of operands, structure, and unparsed output
         [Fact]
         public void CreatePlusNode_WithExpressionNodes_CreatesNodeWithCorrectOperands()
         {
@@ -237,6 +251,8 @@ namespace AST.Tests
         #endregion
 
         #region Statement Tests
+        // Tests for statement creation (AssignmentStmt, ReturnStmt, BlockStmt)
+        // including correct structure, unparsing, and indentation handling
         [Fact]
         public void CreateAssignmentStmt_WithVariableAndExpression_CreatesStatementWithCorrectOperands()
         {
@@ -383,6 +399,7 @@ namespace AST.Tests
         #endregion
 
         #region Complex Expression Tests
+        // Tests for nested and complex expressions to verify correct AST structure
         [Fact]
         public void CreateComplexExpression_WithNestedOperators_CreatesCorrectStructure()
         {
@@ -429,6 +446,7 @@ namespace AST.Tests
         private readonly DebugBuilder _builder = new DebugBuilder();
 
         #region Node Creation Tests
+        // Tests that DebugBuilder produces console output while creating correct node types
         [Theory]
         [InlineData(0)]
         [InlineData(42)]
@@ -778,6 +796,7 @@ namespace AST.Tests
         #endregion
 
         #region Operator Output Tests
+        // Tests that debug output includes operand values and detailed creation information
         [Fact]
         public void DebugBuilder_WithBinaryOperators_IncludesOperandValuesInOutput()
         {
@@ -836,6 +855,7 @@ namespace AST.Tests
         #endregion
 
         #region Inheritance Tests
+        // Tests that DebugBuilder properly inherits from DefaultBuilder and provides expected behavior
         [Fact]
         public void DebugBuilder_InheritsFromDefaultBuilder_CreatesSameNodeTypes()
         {
@@ -859,6 +879,7 @@ namespace AST.Tests
         private readonly NullBuilder _builder = new NullBuilder();
 
         #region LiteralNode Tests
+        // Tests that NullBuilder returns null for all LiteralNode creation attempts
         [Theory]
         [InlineData(0)]
         [InlineData(1)]
@@ -876,6 +897,7 @@ namespace AST.Tests
         #endregion
 
         #region VariableNode Tests
+        // Tests that NullBuilder returns null for all VariableNode creation attempts
         [Theory]
         [InlineData("x")]
         [InlineData("y")]
@@ -892,6 +914,7 @@ namespace AST.Tests
         #endregion
 
         #region Binary Operator Tests
+        // Tests that NullBuilder returns null for all binary operators
         [Fact]
         public void CreatePlusNode_ReturnsNull()
         {
@@ -992,6 +1015,7 @@ namespace AST.Tests
         #endregion
 
         #region Statement Tests
+        // Tests that NullBuilder returns null for all statement creation attempts
         [Fact]
         public void CreateAssignmentStmt_ReturnsNull()
         {
@@ -1034,6 +1058,7 @@ namespace AST.Tests
         #endregion
 
         #region All Methods Test
+        // Comprehensive test verifying that all creation methods return null
         [Fact]
         public void NullBuilder_AllMethods_ReturnNull()
         {
@@ -1062,6 +1087,7 @@ namespace AST.Tests
         #endregion
 
         #region Inheritance Tests
+        // Tests that NullBuilder properly inherits from DefaultBuilder
         [Fact]
         public void NullBuilder_InheritsFromDefaultBuilder()
         {
