@@ -4,7 +4,7 @@
  *
  * Bugs: None noted
  *
- * @author <your name>
+ * @author Jalil Garvin-Mingo
  * @date   February 27, 2026
  */
 

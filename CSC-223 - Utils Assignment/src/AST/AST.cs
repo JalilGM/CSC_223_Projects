@@ -3,9 +3,9 @@
  * the parser/compiler assignments. Contains literal, variable, operator
  * and statement types along with utility methods for unparsing.
  *
- * Bugs: None known
+ * Bugs: Had to change input for binary operator nodes to be ExpressionNode instead of LiteralNode
  *
- * @author <your name>
+ * @author jalil
  * @date   February 27, 2026
  */
 using Containers;

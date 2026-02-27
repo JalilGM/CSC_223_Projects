@@ -4,7 +4,7 @@
  *
  * Bugs: None known at this time
  *
- * @author Generated via LLM with manual review and enhancement
+ * @author Jalil Garvin-Mingo
  * @date   February 27, 2026
  */
 
