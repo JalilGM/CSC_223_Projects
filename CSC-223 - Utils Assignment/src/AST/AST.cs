@@ -62,7 +62,7 @@ public class VariableNode : ExpressionNode
 
 public class PlusNode : BinaryOperator
     {
-        public PlusNode(LiteralNode left, LiteralNode right) : base(left, right)
+        public PlusNode(ExpressionNode left, ExpressionNode right) : base(left, right)
         { 
         }
 
@@ -74,7 +74,7 @@ public class PlusNode : BinaryOperator
 
 public class MinusNode : BinaryOperator
     {
-        public MinusNode(LiteralNode left, LiteralNode right) : base(left, right)
+        public MinusNode(ExpressionNode left, ExpressionNode right) : base(left, right)
         {
         }
 
@@ -86,7 +86,7 @@ public class MinusNode : BinaryOperator
 
 public class TimesNode : BinaryOperator
     {
-        public TimesNode(LiteralNode left, LiteralNode right) : base(left, right)
+        public TimesNode(ExpressionNode left, ExpressionNode right) : base(left, right)
         {
         }
 
@@ -98,7 +98,7 @@ public class TimesNode : BinaryOperator
 
 public class FloatDivNode : BinaryOperator
     {
-        public FloatDivNode(LiteralNode left, LiteralNode right) : base(left, right)
+        public FloatDivNode(ExpressionNode left, ExpressionNode right) : base(left, right)
         {
         }
 
@@ -110,7 +110,7 @@ public class FloatDivNode : BinaryOperator
 
 public class IntDivNode : BinaryOperator
     {
-        public IntDivNode(LiteralNode left, LiteralNode right) : base(left, right)
+        public IntDivNode(ExpressionNode left, ExpressionNode right) : base(left, right)
         {
         }
 
@@ -122,7 +122,7 @@ public class IntDivNode : BinaryOperator
 
 public class ModulusNode : BinaryOperator
     {
-        public ModulusNode(LiteralNode left, LiteralNode right) : base(left, right)
+        public ModulusNode(ExpressionNode left, ExpressionNode right) : base(left, right)
         {
         }
 
@@ -134,7 +134,7 @@ public class ModulusNode : BinaryOperator
 
 public class ExponentiationNode : BinaryOperator
     {
-        public ExponentiationNode(LiteralNode left, LiteralNode right) : base(left, right)
+        public ExponentiationNode(ExpressionNode left, ExpressionNode right) : base(left, right)
         {
         }
 
