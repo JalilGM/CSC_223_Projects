@@ -383,11 +383,10 @@ namespace AST.Tests
             var stmt1 = _builder.CreateAssignmentStmt(_builder.CreateVariableNode("x"), _builder.CreateLiteralNode(10));
             var stmt2 = _builder.CreateReturnStmt(_builder.CreateVariableNode("x"));
             
-            symbolTable.Add("stmt1", stmt1);
-            symbolTable.Add("stmt2", stmt2);
-
             // Act
             var block = _builder.CreateBlockStmt(symbolTable);
+            block.Statements.Add(stmt1);
+            block.Statements.Add(stmt2);
             var result = block.Unparse(0);
 
             // Assert

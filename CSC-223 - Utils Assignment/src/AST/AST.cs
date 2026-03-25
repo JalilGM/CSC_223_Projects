@@ -238,10 +238,12 @@ public abstract class Statement
 public class BlockStmt : Statement
     {
         public SymbolTable<string, object> SymbolTable { get; }
+        public List<Statement> Statements { get;}
 
         public BlockStmt(SymbolTable<string, object> symbolTable) 
         {
             SymbolTable = symbolTable;
+            Statements = new List<Statement>();
         }
 
         // BlockStmt use level to indent their opening and closing curly braces, then increment level when calling Unparse on 
@@ -258,10 +260,10 @@ public class BlockStmt : Statement
 
             // Start the result string with an opening curly brace and a newline, indented according to the current level.
             string result = $"{indent}{{\n";
-            foreach (var entry in SymbolTable)
+            foreach (var stmt in Statements)
             {
                 //  unparse it with the child indentation and add it to the result string.
-                result += $"{childindent}{((Statement)entry.Value).Unparse(level + 1)}\n"; // had to autofix (include Statement)
+                result += $"{childindent}{stmt.Unparse(level + 1)}\n"; // had to autofix (include Statement)
             }
             result += $"{indent}}}"; // Add the closing curly brace with the same indentation as the opening brace.
             return result;
