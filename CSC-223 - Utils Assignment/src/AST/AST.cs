@@ -167,7 +167,6 @@ namespace AST
     public class BlockStmt : Statement
     {
         public SymbolTable<string, object> SymbolTable { get; }
-        public List<Statement> Statements { get;}
         public List<Statement> Statements { get; }
 
         public BlockStmt(SymbolTable<string, object> symbolTable)
@@ -195,7 +194,7 @@ namespace AST
             foreach (var stmt in Statements)
             {
                 //  unparse it with the child indentation and add it to the result string.
-                result += $"{childindent}{stmt.Unparse(level + 1)}\n"; // had to autofix (include Statement)
+                result += $"{childIndent}{stmt.Unparse(level + 1)}\n"; // had to autofix (include Statement)
             }
             result += $"{indent}}}"; // Add the closing curly brace with the same indentation as the opening brace.
             return result;
