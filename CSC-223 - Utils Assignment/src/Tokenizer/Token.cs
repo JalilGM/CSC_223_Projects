@@ -1,4 +1,3 @@
-
 /**
 * Definitions for the tokens produced by the tokenizer and related constants.
 *
@@ -6,7 +5,7 @@
 * tokens, a collection of string constants used by the tokenizer implementation,
 * and the <see cref="Token"/> class itself which holds a value/type pair.
 *
-* Bugs: 
+* Changes: Added UNKNOWN token type to support test cases that inject unexpected tokens.
 *
 * @Jalil Garvin-Mingo
 * @date 2026-02-20
@@ -33,6 +32,12 @@ public enum TokenType
     RIGHT_PAREN,
     LEFT_CURLY,
     RIGHT_CURLY,
+
+    /// <summary>
+    /// Represents a token of unknown or unrecognised type.
+    /// Used in tests to simulate invalid input without triggering tokenizer errors.
+    /// </summary>
+    UNKNOWN,
 }
 
 /// <summary>
@@ -42,24 +47,24 @@ public class TokenConstants
 {
     public const string RETURN = "return";
 
-    public const string PLUS = "+";
-    public const string MINUS = "-";
-    public const string TIMES = "*";
-    public const string FLOAT_DIVISION = "/";
+    public const string PLUS             = "+";
+    public const string MINUS            = "-";
+    public const string TIMES            = "*";
+    public const string FLOAT_DIVISION   = "/";
     public const string INTEGER_DIVISION = "//";
-    public const string MODULUS = "%";
-    public const string EXPONENTIATION = "**";
-    public const string ASSIGNMENT = ":=";
-    public const string DECIMAL_POINT = ".";
+    public const string MODULUS          = "%";
+    public const string EXPONENTIATION   = "**";
+    public const string ASSIGNMENT       = ":=";
+    public const string DECIMAL_POINT    = ".";
 
-    public const string LEFT_PAREN = "(";
+    public const string LEFT_PAREN  = "(";
     public const string RIGHT_PAREN = ")";
-    public const string LEFT_CURLY = "{";
+    public const string LEFT_CURLY  = "{";
     public const string RIGHT_CURLY = "}";
 }
 
 /// <summary>
-/// Represents a single token produced by the tokenizer.  Equality is defined by
+/// Represents a single token produced by the tokenizer. Equality is defined by
 /// comparing both the <see cref="Value"/> and <see cref="Type"/>.
 /// </summary>
 public class Token
@@ -70,30 +75,21 @@ public class Token
     /// <summary>Category of this token.</summary>
     public TokenType Type { get; set; }
 
-    /// <summary>
-    /// Construct a token with the given value and type.
-    /// </summary>
-    /// <param name="value">The literal string from the source text.</param>
-    /// <param name="type">The category of token.</param>
+    /// <summary>Construct a token with the given value and type.</summary>
     public Token(string? value, TokenType type)
     {
         Value = value;
-        Type = type;
+        Type  = type;
     }
 
     /// <inheritdoc/>
-    public override string ToString()
-    {
-        return $"({Value}, {Type})";
-    }
+    public override string ToString() => $"({Value}, {Type})";
 
     /// <inheritdoc/>
     public override bool Equals(object? obj)
     {
         if (obj is Token token)
-        {
             return Value == token.Value && Type == token.Type;
-        }
         return false;
     }
 }

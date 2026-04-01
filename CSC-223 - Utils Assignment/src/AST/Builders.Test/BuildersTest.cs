@@ -268,7 +268,7 @@ namespace AST.Tests
             Assert.IsType<AssignmentStmt>(stmt);
             Assert.Same(variable, stmt.Variable);
             Assert.Same(expression, stmt.Expression);
-            Assert.Equal("x = 42", stmt.Unparse(0));
+            Assert.Equal("x := 42", stmt.Unparse(0));
         }
 
         [Fact]
@@ -284,7 +284,7 @@ namespace AST.Tests
             var stmt = _builder.CreateAssignmentStmt(variable, expression);
 
             // Assert
-            Assert.Equal("result = (10 + 5)", stmt.Unparse(0));
+            Assert.Equal("result := (10 + 5)", stmt.Unparse(0));
         }
 
         [Fact]
@@ -296,9 +296,9 @@ namespace AST.Tests
             var stmt = _builder.CreateAssignmentStmt(variable, expression);
 
             // Act & Assert
-            Assert.Equal("x = 100", stmt.Unparse(0));
-            Assert.Equal("    x = 100", stmt.Unparse(1));
-            Assert.Equal("        x = 100", stmt.Unparse(2));
+            Assert.Equal("x := 100", stmt.Unparse(0));
+            Assert.Equal("    x := 100", stmt.Unparse(1));
+            Assert.Equal("        x := 100", stmt.Unparse(2));
         }
 
         [Fact]
@@ -392,7 +392,7 @@ namespace AST.Tests
             // Assert
             Assert.Contains("{", result);
             Assert.Contains("}", result);
-            Assert.Contains("x = 10", result);
+            Assert.Contains("x := 10", result);
             Assert.Contains("return x", result);
         }
         #endregion

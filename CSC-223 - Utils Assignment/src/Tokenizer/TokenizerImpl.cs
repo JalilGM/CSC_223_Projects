@@ -62,7 +62,7 @@ public class TokenizerImpl
                 // arithmetic operator
                 tokens.Add(HandleOperator(input, ref index));
             }
-            else if (assignments.Contains(c.ToString()))
+            else if (c == ':')
             {
                 // assignment operator (only ":=")
                 tokens.Add(HandleAssignment(input, ref index));
@@ -75,7 +75,7 @@ public class TokenizerImpl
             else
             {
                 // character not recognized by the tokenizer rules
-                throw new ArgumentException($"Unexpected character: {c}");
+                throw new ArgumentException($"Invalid character: {c}");
             }
         }
         return tokens;
@@ -186,19 +186,21 @@ public class TokenizerImpl
     private Token HandleAssignment(string input, ref int index)
     {
         string assign = input[index].ToString();
-        // Check for two-character just assignment operator, since the only assignment operator is ":="
-        if (index + 1 < input.Length) 
-        {
-            string twocharassign = assign + input[index + 1];
-
-            if (twocharassign == TokenConstants.ASSIGNMENT)
+            // Check for two-character assignment operator ':='
+            if (index + 1 < input.Length)
             {
-                index += 2; // Skip both characters for two-character assignment operator
-                return new Token(twocharassign, TokenType.ASSIGNMENT);
+                string twocharassign = assign + input[index + 1];
+
+                if (twocharassign == TokenConstants.ASSIGNMENT)
+                {
+                    index += 2; // Skip both characters for two-character assignment operator
+                    return new Token(twocharassign, TokenType.ASSIGNMENT);
+                }
             }
+
+            // Single ':' or malformed assignment is treated as invalid
+            throw new ArgumentException($"Unexpected character: {assign}");
         }
-        throw new ArgumentException($"Unexpected assignment operator: {assign}");        
-    }
 
     /// <summary>
     /// Recognizes separators like parentheses and curly braces.

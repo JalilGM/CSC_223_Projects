@@ -262,12 +262,12 @@ public class TokenizerTest
     #region Assignment Tokenization Tests // tests around the ":=" assignment operator and edge conditions
 
     [Fact]
-    public void Tokenize_AssignmentOperator_StandAlone_ThrowsArgumentException()
+    public void Tokenize_AssignmentOperator_StandAlone_ReturnsAssignmentToken()
     {
-        // The tokenizer has a bug: assignments array contains ":=" but checks for single ":"
-        // This causes single ":" to throw "Unexpected character"
-        var ex = Assert.Throws<ArgumentException>(() => _tokenizer.Tokenize(":="));
-        Assert.Contains("Unexpected character", ex.Message);
+        var result = _tokenizer.Tokenize(":=");
+        Assert.Single(result);
+        Assert.Equal(TokenType.ASSIGNMENT, result[0].Type);
+        Assert.Equal(":=", result[0].Value);
     }
 
     #endregion
@@ -467,7 +467,7 @@ public class TokenizerTest
     public void Tokenize_UnexpectedCharacterInExpression_ThrowsExceptionWithDetails()
     {
         var ex = Assert.Throws<ArgumentException>(() => _tokenizer.Tokenize("42 @ 100"));
-        Assert.Contains("Unexpected character", ex.Message);
+        Assert.Contains("Invalid character", ex.Message);
         Assert.Contains("@", ex.Message);
     }
 
