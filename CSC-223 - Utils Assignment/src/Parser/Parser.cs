@@ -5,7 +5,23 @@ using AST;
 using Tokenizer;
 using Containers;
 
-/// Parser for the DEC language.
+/**
+* Parser for the DEC language. Converts tokenized source code into an AST.
+*
+* The DEC language supports: 
+* - Expressions: parenthesised variables, literals, and binary operations.
+* - Statements: variable assignment (':='), return statements, and nested blocks.
+* The parser performs recursive descent parsing, with separate methods for expressions, statements, 
+* and blocks. It also maintains a symbol table for variable declarations.
+*
+* Bugs: The expression parsing logic previously did not handle missing closing parentheses correctly, 
+*       resulting in parsing errors when parentheses were mismatched. 
+*
+* @Jalil Garvin-Mingo
+* @date 2026-03-30
+*/
+
+// The DEC language syntax is defined as follows:
 /// 
 /// Grammar for DEC language expressions:
 /// expr       ::= '(' variable ')' | '(' literal ')' | '(' expr binary_op expr ')'
