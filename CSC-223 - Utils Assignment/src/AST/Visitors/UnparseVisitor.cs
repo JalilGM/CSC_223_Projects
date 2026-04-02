@@ -41,7 +41,57 @@ namespace AST
             return $"({left} + {right})";
         }
 
-        // TODO
+        public string Visit(MinusNode node, int level)
+        {
+            string left = node.Left.Accept(this, level);
+            string right = node.Right.Accept(this, level);
+            return $"({left} - {right})";
+        }
+
+        public string Visit(TimesNode node, int level)
+        {
+            string left = node.Left.Accept(this, level);
+            string right = node.Right.Accept(this, level);
+            return $"({left} * {right})";
+        }
+
+        public string Visit(FloatDivNode node, int level)
+        {
+            string left = node.Left.Accept(this, level);
+            string right = node.Right.Accept(this, level);
+            return $"({left} / {right})";
+        }
+
+        public string Visit(IntDivNode node, int level)
+        {
+            string left = node.Left.Accept(this, level);
+            string right = node.Right.Accept(this, level);
+            return $"({left} // {right})";
+        }
+
+        public string Visit(ModulusNode node, int level)
+        {
+            string left = node.Left.Accept(this, level);
+            string right = node.Right.Accept(this, level);
+            return $"({left} % {right})";
+        }
+
+        public string Visit(ExponentiationNode node, int level)
+        {
+            string left = node.Left.Accept(this, level);
+            string right = node.Right.Accept(this, level);
+            return $"({left} ** {right})";
+        }
+
+        public string Visit(LiteralNode node, int level)
+        {
+            return node.Value.ToString();
+        }
+
+        public string Visit(VariableNode node, int level)
+        {
+            return node.Name;
+        }
 
         #endregion
 
@@ -49,7 +99,28 @@ namespace AST
 
         #region Statement Node Visit Methods
 
-        // TODO
+        public string Visit(AssignmentStmt node, int level)
+        {
+            string variable = node.Variable.Accept(this, level);
+            string expression = node.Expression.Accept(this, level);
+            return $"{new string(' ', level * 4)}{variable} := {expression}"; // cant use GetIndentation because its protected 
+        }
+
+        public string Visit(ReturnStmt node, int level)
+        {
+            string expression = node.Expression.Accept(this, level);
+            return $"{new string(' ', level * 4)}return {expression}"; // cant use GetIndentation because its protected 
+        }
+
+        public string Visit(BlockStmt node, int level)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var stmt in node.Statements)
+            {
+                sb.AppendLine(stmt.Accept(this, level));
+            }
+            return sb.ToString();
+        }
 
         #endregion
     }
