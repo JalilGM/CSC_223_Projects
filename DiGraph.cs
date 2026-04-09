@@ -24,13 +24,25 @@ namespace New_CSC.src.Utilities.Containers
             {
                 throw new ArgumentException("Source and Destination must be in graph");
             }
+            if (_adjacencyList[source].Contains(destination))
+            {
+                return false;
+            }
             _adjacencyList[source].Insert(0,destination);
             return true;
         }
         public bool RemoveVertex(T vertex)
         {
             if (_adjacencyList.ContainsKey(vertex))
-            {
+            {   
+                
+                foreach (T key in _adjacencyList.Keys)
+                {
+                    if (_adjacencyList[key].Contains(vertex))
+                    {
+                        this.RemoveEdge(key,vertex);
+                    }
+                }
                 _adjacencyList.Remove(vertex);
                 return true;
             }
@@ -47,8 +59,11 @@ namespace New_CSC.src.Utilities.Containers
         }
         public bool HasEdge(T source, T destination)
         {
-            if (_adjacencyList[
-                source].Contains(destination))
+            if (!_adjacencyList.ContainsKey(source) || !_adjacencyList.ContainsKey(destination))
+            {
+                return false;
+            }
+            if (_adjacencyList[source].Contains(destination))
             {
                 return true;
             }
@@ -69,12 +84,33 @@ namespace New_CSC.src.Utilities.Containers
         }
         public IEnumerable<T> GetVertices()
         {
-            foreach (T node in _adjacencyList.Keys)
-            {
-                yield return node;
-            }
+            return _adjacencyList.Keys;
         }
-        
 
+        public int VertexCount()
+        {
+            return this.GetVertices().Count();
+        }
+        public int EdgeCount()
+        {
+            int edgecount = 0;
+            foreach(DLL<T> edgelist in _adjacencyList.Values)
+            {
+                foreach (T node in edgelist)
+                {
+                    edgecount += 1;
+                }
+            }
+            return edgecount;
+        }
+        public override string ToString()
+        {
+            string digraph = "";
+            foreach (KeyValuePair<T, DLL<T>> pair in _adjacencyList)
+            {
+                digraph += $"{pair.ToString()}, \n";
+            }
+            return digraph;
+        }
     }
 }
